@@ -71,11 +71,6 @@ body {
 }
 
 /* Scroll-driven reveals; browsers without support just show content */
-@keyframes grow {
-  from {
-    transform: scaleX(0);
-  }
-}
 @keyframes progress {
   from {
     transform: scaleX(0);
@@ -157,12 +152,6 @@ body {
     animation: rise linear both;
     animation-timeline: view();
     animation-range: entry 0% cover 25%;
-  }
-  .grow {
-    transform-origin: left;
-    animation: grow linear both;
-    animation-timeline: view();
-    animation-range: entry 10% cover 35%;
   }
 }
 
@@ -268,7 +257,6 @@ body {
   .rise,
   .kenburns,
   .reveal,
-  .grow,
   .scan,
   .parallax,
   .drift,

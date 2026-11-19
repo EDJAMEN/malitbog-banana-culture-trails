@@ -1,5 +1,6 @@
 import Image from "next/image";
 import PlaceMap from "../components/place-map";
+import PopulationBars from "../components/population-bars";
 import Slideshow from "../components/slideshow";
 
 const img = (id: string) => `/images/${id}.jpg`;
@@ -170,7 +171,6 @@ const partners = [
   },
 ];
 
-const maxPop =Math.max(...barangays.map((b) => b.pop ?? 0));
 
 const sources = [
   { name: "Provincial Government of Bukidnon", href: "https://bukidnon.gov.ph/malitbog" },
@@ -722,27 +722,7 @@ export default function Home() {
 
               <div className="md:col-span-3">
                 <p className={`${eyebrow} text-muted`}>Population · 2020 Census</p>
-                <ul className="mt-6 space-y-1">
-                  {barangays.map((b) => (
-                    <li
-                      key={b.name}
-                      className="group grid grid-cols-[7rem_1fr_4rem] items-center gap-4 rounded-xl px-3 py-2.5 text-sm transition hover:bg-white/70"
-                    >
-                      <span className="transition group-hover:text-leaf">{b.name}</span>
-                      <span className="h-1.5 overflow-hidden rounded-full bg-line transition-all group-hover:h-2.5">
-                        {b.pop !== null && (
-                          <span
-                            className="grow block h-full rounded-full bg-linear-to-r from-leaf to-banana"
-                            style={{ width: `${(b.pop / maxPop) * 100}%` }}
-                          />
-                        )}
-                      </span>
-                      <span className="text-right font-mono text-muted transition group-hover:text-ink">
-                        {b.pop !== null ? b.pop.toLocaleString("en-US") : "—"}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <PopulationBars rows={barangays} />
               </div>
             </div>
           </div>
