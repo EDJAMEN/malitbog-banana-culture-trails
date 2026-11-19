@@ -1,26 +1,280 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f5f2ea;
+  --ink: #1a2a20;
+  --muted: #6b7266;
+  --line: #d9d4c5;
+  --leaf: #2f5d3e;
+  --banana: #e9b949;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-leaf: var(--leaf);
+  --color-banana: var(--banana);
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Fraunces' soft, rounded display cut: organic, fruit-like curves for the hero */
+.soft-display {
+  font-variation-settings: "SOFT" 100, "WONK" 0, "opsz" 144;
+}
+.soft-italic {
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 72;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--banana);
+  color: var(--ink);
+}
+
+/* Entrance */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Slow hero zoom; base scale also crops the photo's letterbox bars */
+@keyframes kenburns {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1.16) translate(-1%, -1%);
+  }
+}
+.kenburns {
+  animation: kenburns 24s ease-in-out infinite alternate;
+}
+
+/* Scroll-driven reveals; browsers without support just show content */
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+/* Pans the crop window, so it never conflicts with hover zoom transforms */
+@keyframes parallax {
+  from {
+    object-position: 50% 15%;
+  }
+  to {
+    object-position: 50% 85%;
+  }
+}
+/* `translate` is separate from `transform`, so these stack with existing effects */
+@keyframes drift {
+  from {
+    translate: 0 80px;
+  }
+  to {
+    translate: 0 -80px;
+  }
+}
+@keyframes hero-bg {
+  to {
+    translate: 0 22%;
+  }
+}
+@keyframes hero-out {
+  to {
+    opacity: 0;
+    translate: 0 -90px;
+  }
+}
+/* Endless right-to-left loop; content is duplicated so -50% lands seamlessly */
+@keyframes marquee {
+  to {
+    translate: -50% 0;
+  }
+}
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+.marquee:hover {
+  animation-play-state: paused;
+}
+.scroll-progress {
+  display: none; /* only shown where scroll timelines work */
+}
+@supports (animation-timeline: view()) {
+  .scroll-progress {
+    display: block;
+    transform-origin: left;
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+  .parallax {
+    animation: parallax linear both;
+    animation-timeline: view();
+  }
+  .drift {
+    animation: drift linear both;
+    animation-timeline: view();
+  }
+  .hero-bg {
+    animation: hero-bg linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 100vh;
+  }
+  .hero-out {
+    animation: hero-out linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 75vh;
+  }
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+  .grow {
+    transform-origin: left;
+    animation: grow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 35%;
+  }
+}
+
+/* In a layer so Tailwind utilities (absolute, fixed…) still win over these */
+@layer components {
+/* Cursor spotlight; --x/--y set by <Spotlight /> */
+.spot {
+  position: relative;
+  isolation: isolate;
+}
+.spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(
+    420px circle at var(--x, 50%) var(--y, 50%),
+    color-mix(in srgb, var(--banana) 24%, transparent),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.spot:hover::before {
+  opacity: 1;
+}
+
+/* Gradient hairline border on hover */
+.edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--banana),
+    transparent 40%,
+    transparent 60%,
+    var(--leaf)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.edge:hover::after,
+.edge:focus-visible::after {
+  opacity: 1;
+}
+
+/* Light sweep across buttons */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.45) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.7s;
+}
+.sheen:hover::after {
+  transform: translateX(120%);
+}
+}
+
+/* Map locating sweep */
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(200%);
+  }
+}
+.scan {
+  animation: scan 1.6s ease-in-out infinite;
+}
+
+.glow {
+  background: radial-gradient(circle, var(--banana), transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise,
+  .kenburns,
+  .reveal,
+  .grow,
+  .scan,
+  .parallax,
+  .drift,
+  .hero-bg,
+  .hero-out,
+  .marquee {
+    animation: none;
+  }
 }
